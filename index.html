@@ -187,7 +187,7 @@ textarea { min-height: 5.5rem; resize: vertical; }
                 <input type="number" id="lab-crew" inputmode="numeric" min="1" step="1" placeholder="2"></div>
               <div class="field"><label for="lab-hours">Hours per crew member</label>
                 <input type="number" id="lab-hours" inputmode="decimal" min="0" step="1" placeholder="4">
-                <p class="help">First hour is $150 per crew member and includes trip charge up to 30 miles. After that, $38 per hour per crew member.</p></div>
+                <p class="help">First hour is $150 per 2 crew members. This includes the trip charge for up to 30 miles from Nashville.</p></div>
             </div>
             <div class="field"><label for="lab-desc">What do you need done?</label>
               <textarea id="lab-desc" maxlength="200" rows="2"></textarea></div>
@@ -201,7 +201,7 @@ textarea { min-height: 5.5rem; resize: vertical; }
                 <input type="number" id="dem-crew" inputmode="numeric" min="1" step="1" placeholder="2"></div>
               <div class="field"><label for="dem-hours">Hours per crew member</label>
                 <input type="number" id="dem-hours" inputmode="decimal" min="0" step="1" placeholder="4">
-                <p class="help">First hour is $150 per crew member and includes trip charge up to 30 miles. After that, $48 per hour per crew member.</p></div>
+                <p class="help">First hour is $150 per 2 crew members. This includes the trip charge for up to 30 miles from Nashville.</p></div>
             </div>
             <div class="field"><label for="dem-desc">What do you need done?</label>
               <textarea id="dem-desc" maxlength="200" rows="2"></textarea></div>
@@ -417,8 +417,8 @@ function money(n) {
   return '$' + (Number.isInteger(n) ? n.toLocaleString('en-US') : n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
 }
 const otherVisit = s => !!(Object.keys(s.svc).some(k => k !== 'pressure' && s.svc[k]) || s.pw.house);
-// First hour is $150 per crew member (trip included up to 30 miles), then the hourly rate for each hour after
-function hourPay(hrs, rate) { return PRICES.hourly.first + Math.max(0, hrs - 1) * rate; }
+// First hour is $150 per 2 crew members (trip included up to 30 miles), then the hourly rate per crew member for each hour after
+function hourPay(crew, hrs, rate) { return Math.ceil(crew / 2) * PRICES.hourly.first + crew * Math.max(0, hrs - 1) * rate; }
 function compute(s) {
   const lines = [];
   const add = (svc, label, detail, amount, extra) => lines.push(Object.assign({ svc, label, detail, amount }, extra));
@@ -488,8 +488,7 @@ function compute(s) {
     else if (o.freq === 'oneoff') {
       const crew = cnt(o.crew), hrs = num(o.hours);
       if (crew > 0 && hrs > 0) {
-        const per = hourPay(hrs, PRICES.hourly.labor);
-        add('prod', 'Production cleans', 'One-off, ' + what + ', ' + crew + (crew === 1 ? ' crew member, ' : ' crew members, ') + hrs + (hrs === 1 ? ' hour each' : ' hours each'), r2(crew * per));
+        add('prod', 'Production cleans', 'One-off, ' + what + ', ' + crew + (crew === 1 ? ' crew member, ' : ' crew members, ') + hrs + (hrs === 1 ? ' hour each' : ' hours each'), r2(hourPay(crew, hrs, PRICES.hourly.labor)));
       } else add('prod', 'Production cleans', 'Enter crew size and hours', null);
     } else {
       const sf = num(o.sf), wk = o.freq !== 'biweekly', rate = (wk ? PRICES.prod.weekly : PRICES.prod.biweekly) * (o.sweep && o.trash ? 1 : 0.5);
@@ -500,8 +499,7 @@ function compute(s) {
   const hourly = (svc, label, rate, o) => {
     const crew = cnt(o.crew), hrs = num(o.hours);
     if (crew > 0 && hrs > 0) {
-      const per = hourPay(hrs, rate);
-      add(svc, label, crew + (crew === 1 ? ' crew member, ' : ' crew members, ') + hrs + (hrs === 1 ? ' hour each' : ' hours each') + (o.desc ? '. ' + o.desc : ''), r2(crew * per));
+      add(svc, label, crew + (crew === 1 ? ' crew member, ' : ' crew members, ') + hrs + (hrs === 1 ? ' hour each' : ' hours each') + (o.desc ? '. ' + o.desc : ''), r2(hourPay(crew, hrs, rate)));
     } else add(svc, label, 'Enter crew size and hours', null);
   };
   if (s.svc.labor) hourly('labor', 'General labor', PRICES.hourly.labor, s.labor);
@@ -613,7 +611,7 @@ function render() {
   $('prod-sf-f').hidden = pf === 'oneoff';
   $('prod-hr-f').hidden = pf !== 'oneoff';
   $('prod-help').textContent = pf === 'oneoff'
-    ? 'One-off cleanups: first hour is $150 per crew member and includes trip charge up to 30 miles. After that, $38 per hour per crew member.'
+    ? 'First hour is $150 per 2 crew members. This includes the trip charge for up to 30 miles from Nashville.'
     : (pf === 'weekly' ? 'Weekly is 5¢ per sq ft for sweeping and trash pickup together, or half of that for just one.' : 'Bi-weekly is 8¢ per sq ft for sweeping and trash pickup together, or half of that for just one.');
   const other = otherVisit(s), mr = $('conc-measure');
   mr.disabled = !other;
