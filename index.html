@@ -156,13 +156,13 @@ textarea { min-height: 5.5rem; resize: vertical; }
 
       <div class="svcs">
         <div class="svc" id="s-prod">
-          <label class="svc-head" for="c-prod"><input type="checkbox" id="c-prod"><span><span class="svc-name">Production cleans</span><span class="svc-sub">Jobsite cleaning, recurring or one-off: sweeping and trash pickup, inside and out.</span></span></label>
+          <label class="svc-head" for="c-prod"><input type="checkbox" id="c-prod"><span><span class="svc-name">Production cleans</span><span class="svc-sub">Jobsite cleaning, recurring or one-time: sweeping and trash pickup, inside and out.</span></span></label>
           <div class="svc-body" id="b-prod" hidden>
             <div class="field"><span class="lbl" id="prod-lbl">How often</span>
               <div class="seg" role="radiogroup" aria-labelledby="prod-lbl">
                 <label><input type="radio" name="prod-freq" value="weekly" checked><span>Weekly</span></label>
                 <label><input type="radio" name="prod-freq" value="biweekly"><span>Bi-weekly</span></label>
-                <label><input type="radio" name="prod-freq" value="oneoff"><span>One-off cleanup</span></label>
+                <label><input type="radio" name="prod-freq" value="oneoff"><span>One-time cleanup</span></label>
               </div></div>
             <div class="field"><span class="lbl">What do you need?</span>
               <label class="chk" for="prod-sweep"><input type="checkbox" id="prod-sweep" checked><span>Sweeping</span></label>
@@ -261,8 +261,10 @@ textarea { min-height: 5.5rem; resize: vertical; }
           </div>
         </div>
         <div class="svc" id="s-puff">
-          <label class="svc-head" for="c-puff"><input type="checkbox" id="c-puff"><span><span class="svc-name">Puff clean</span><span class="svc-sub">Light clean: mop hard floors, vacuum carpets, clean countertops. 8¢ per sq ft.</span></span></label>
+          <label class="svc-head" for="c-puff"><input type="checkbox" id="c-puff"><span><span class="svc-name">Puff clean</span><span class="svc-sub">Mop hard floors, vacuum carpets, clean countertops. Lite, medium or heavy, 8¢ to 25¢ per sq ft.</span></span></label>
           <div class="svc-body" id="b-puff" hidden>
+            <div class="field"><label for="puff-level">Level of clean</label>
+              <select id="puff-level"><option value="lite">Lite clean (8¢ per sq ft)</option><option value="medium">Medium clean (15¢ per sq ft)</option><option value="heavy">Heavy clean (25¢ per sq ft)</option></select></div>
             <div class="field"><label for="puff-sf">Interior size (sq ft)</label>
               <input type="number" id="puff-sf" inputmode="numeric" min="0" step="500" placeholder="2500">
               <p class="help">Need more than this? Tell us in the notes.</p></div>
@@ -403,7 +405,7 @@ const PRICES = {
   duct: { system: 200, supply: 38, ret: 52, trunk: 52, min: 400, mold: 95, dryer: 135 },
   fallPct: 0.10,
   finalClean: { rate: 0.40 },
-  puff: { rate: 0.08 },
+  puff: { lite: { label: 'Lite clean', rate: 0.08 }, medium: { label: 'Medium clean', rate: 0.15 }, heavy: { label: 'Heavy clean', rate: 0.25 } },
   prod: { weekly: 0.05, biweekly: 0.08 },
   hourly: { labor: 38, demo: 48, first: 150 },
   trip: { '15': 20, '25': 40, '30': 55 },
@@ -479,8 +481,8 @@ function compute(s) {
     sf > 0 ? add('final', 'Final cleaning', sf.toLocaleString('en-US') + ' sq ft', r2(sf * PRICES.finalClean.rate)) : add('final', 'Final cleaning', 'Enter the interior size', null);
   }
   if (s.svc.puff) {
-    const sf = num(s.puff.sf);
-    sf > 0 ? add('puff', 'Puff clean', sf.toLocaleString('en-US') + ' sq ft', r2(sf * PRICES.puff.rate)) : add('puff', 'Puff clean', 'Enter the interior size', null);
+    const sf = num(s.puff.sf), t = PRICES.puff[s.puff.level] || PRICES.puff.lite;
+    sf > 0 ? add('puff', 'Puff clean', t.label + ', ' + sf.toLocaleString('en-US') + ' sq ft', r2(sf * t.rate)) : add('puff', 'Puff clean', t.label + ', enter the interior size', null);
   }
   if (s.svc.prod) {
     const o = s.prod, what = o.sweep && o.trash ? 'sweeping and trash pickup' : o.sweep ? 'sweeping only' : o.trash ? 'trash pickup only' : '';
@@ -488,7 +490,7 @@ function compute(s) {
     else if (o.freq === 'oneoff') {
       const crew = cnt(o.crew), hrs = num(o.hours);
       if (crew > 0 && hrs > 0) {
-        add('prod', 'Production cleans', 'One-off, ' + what + ', ' + crew + (crew === 1 ? ' crew member, ' : ' crew members, ') + hrs + (hrs === 1 ? ' hour each' : ' hours each'), r2(hourPay(crew, hrs, PRICES.hourly.labor)));
+        add('prod', 'Production cleans', 'One-time cleanup, ' + what + ', ' + crew + (crew === 1 ? ' crew member, ' : ' crew members, ') + hrs + (hrs === 1 ? ' hour each' : ' hours each'), r2(hourPay(crew, hrs, PRICES.hourly.labor)));
       } else add('prod', 'Production cleans', 'Enter crew size and hours', null);
     } else {
       const sf = num(o.sf), wk = o.freq !== 'biweekly', rate = (wk ? PRICES.prod.weekly : PRICES.prod.biweekly) * (o.sweep && o.trash ? 1 : 0.5);
@@ -575,7 +577,7 @@ function readState() {
     win: { count: $('win-count').value, sides: (document.querySelector('input[name="win-sides"]:checked') || { value: 'both' }).value },
     duct: { systems: $('d-sys').value, supply: $('d-sup').value, returns: $('d-ret').value, mold: $('d-mold').checked, dryer: $('d-dryer').checked },
     fin: { sf: $('fin-sf').value },
-    puff: { sf: $('puff-sf').value },
+    puff: { level: $('puff-level').value, sf: $('puff-sf').value },
     prod: { freq: (document.querySelector('input[name="prod-freq"]:checked') || { value: 'weekly' }).value, sf: $('prod-sf').value, sweep: $('prod-sweep').checked, trash: $('prod-trash').checked, crew: $('prod-crew').value, hours: $('prod-hours').value },
     mow: { lot: $('mow-lot').value },
     labor: { crew: $('lab-crew').value, hours: $('lab-hours').value, desc: $('lab-desc').value.trim() },
@@ -619,7 +621,7 @@ function render() {
   $('conc-sf-f').hidden = mr.checked;
   $('conc-measure-help').textContent = other
     ? 'We measure when we are there for your other service and confirm the price then. $200 minimum.'
-    : 'We can measure it for you when we are already there for another service. Add one above to use this.';
+    : 'We can measure it for you';
 
   const est = $('est'); est.textContent = '';
   const h = document.createElement('h3'); h.textContent = 'Your selections'; est.appendChild(h);
