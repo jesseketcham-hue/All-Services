@@ -335,9 +335,10 @@ textarea { min-height: 5.5rem; resize: vertical; }
       <p class="sub">The more you tell us, the more exact your price.</p>
       <div class="fields">
         <div class="field"><label for="c-email">Email</label><input type="email" id="c-email" autocomplete="email"></div>
-        <div class="field"><label for="c-street">Street address</label><input type="text" id="c-street" autocomplete="street-address"></div>
-        <div class="field"><label for="c-city">City</label><input type="text" id="c-city" autocomplete="address-level2"></div>
-        <div class="field"><label for="c-zip">ZIP</label><input type="text" id="c-zip" autocomplete="postal-code" inputmode="numeric"></div>
+        <div class="field"><label for="c-street">Job site address</label><input type="text" id="c-street" autocomplete="off">
+          <p class="help">Where we'll be working, not your business address.</p></div>
+        <div class="field"><label for="c-city">Job site city</label><input type="text" id="c-city" autocomplete="off"></div>
+        <div class="field"><label for="c-zip">Job site ZIP</label><input type="text" id="c-zip" autocomplete="off" inputmode="numeric"></div>
         <div class="field"><label for="dist">Distance from downtown Nashville</label>
           <select id="dist"><option value="">Choose one</option><option value="15">Up to 15 miles</option><option value="25">15 to 25 miles</option><option value="30">25 to 30 miles</option><option value="over">Over 30 miles</option></select>
           <p class="help">A best guess is fine. It sets your trip charge, which applies once per service.</p></div>
@@ -382,7 +383,7 @@ textarea { min-height: 5.5rem; resize: vertical; }
   <input name="customer-name">
   <input name="phone">
   <input name="email">
-  <input name="address">
+  <input name="job-site-address">
   <input name="timing">
   <input name="distance">
   <input name="estimated-total">
@@ -558,7 +559,7 @@ const totalText = c => (c.total == null ? 'to be quoted' : money(c.total)) + (to
 function buildRequest(s, c, k) {
   const out = ['QUOTE REQUEST, The Cleanup Company', '', 'Name: ' + k.name, 'Phone: ' + k.phone, 'Preferred timing: ' + k.timing];
   if (k.email) out.push('Email: ' + k.email);
-  if (addrText(k)) out.push('Address: ' + addrText(k));
+  if (addrText(k)) out.push('Job site address: ' + addrText(k));
   if (c.trip.label) out.push('Distance from Nashville center: ' + c.trip.label);
   out.push('', 'Services:');
   if (!c.lines.length) out.push('- None selected');
@@ -723,7 +724,7 @@ function makePdf(s, c, k, id) {
   doc.setTextColor(...ink); doc.setFontSize(11);
   const info = [['Name', k.name], ['Phone', k.phone], ['Preferred timing', k.timing]];
   if (k.email) info.push(['Email', k.email]);
-  if (addrText(k)) info.push(['Address', addrText(k)]);
+  if (addrText(k)) info.push(['Job site', addrText(k)]);
   if (c.trip.label) info.push(['Distance from Nashville center', c.trip.label]);
   info.forEach(([a, b]) => {
     room(20);
@@ -790,7 +791,7 @@ async function sendRequest() {
   fd.append('customer-name', k.name);
   fd.append('phone', k.phone);
   fd.append('email', k.email);
-  fd.append('address', addrText(k));
+  fd.append('job-site-address', addrText(k) || 'Not given');
   fd.append('timing', k.timing);
   fd.append('distance', c.trip.label || '');
   fd.append('estimated-total', totalText(c));
