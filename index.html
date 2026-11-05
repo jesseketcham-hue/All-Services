@@ -24,7 +24,7 @@ img { max-width: 100%; }
   --accent-soft: #E5F1DE;
   --warn-bg: #FFF3D1;
   --warn-ink: #6A4900;
-  --danger: #B3261E;
+  --danger: #B3261E; --danger-soft: #FCEDEC;
   --font-display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
   --font-body: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
@@ -32,14 +32,14 @@ img { max-width: 100%; }
   :root:not([data-theme="light"]) {
     --bg: #11160F; --surface: #192015; --ink: #E8EEE3; --muted: #9BA896; --line: #2C3727;
     --accent: #79C957; --accent-ink: #0D1A07; --accent-soft: #1E2E17;
-    --warn-bg: #33290D; --warn-ink: #F0D58A; --danger: #FF8A80;
+    --warn-bg: #33290D; --warn-ink: #F0D58A; --danger: #FF8A80; --danger-soft: #3A1D1B;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #11160F; --surface: #192015; --ink: #E8EEE3; --muted: #9BA896; --line: #2C3727;
   --accent: #79C957; --accent-ink: #0D1A07; --accent-soft: #1E2E17;
-  --warn-bg: #33290D; --warn-ink: #F0D58A; --danger: #FF8A80;
+  --warn-bg: #33290D; --warn-ink: #F0D58A; --danger: #FF8A80; --danger-soft: #3A1D1B;
   color-scheme: dark;
 }
 @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
@@ -113,6 +113,9 @@ textarea { min-height: 5.5rem; resize: vertical; }
 .btn.alt { background: transparent; color: var(--ink); border: 2px solid var(--ink); }
 .errors { margin: 0 0 1rem; padding: .8rem 1rem; border: 2px solid var(--danger); border-radius: 8px; color: var(--danger); font-weight: 600; }
 .errors ul { margin: .3rem 0 0; padding-left: 1.2rem; }
+.req { color: var(--danger); font-weight: 700; margin-left: .15rem; }
+.field.bad input, .field.bad select, .field.bad textarea { border-color: var(--danger); box-shadow: 0 0 0 1px var(--danger); background: var(--danger-soft); }
+.field.bad > label { color: var(--danger); }
 .done { border: 2px solid var(--accent); border-radius: 10px; padding: 1rem; display: grid; gap: .8rem; background: var(--surface); margin-top: 1rem; }
 .done h3 { margin: 0; font: 700 1.5rem/1.05 var(--font-display); text-transform: uppercase; }
 .done p { margin: 0; }
@@ -321,9 +324,9 @@ textarea { min-height: 5.5rem; resize: vertical; }
       <h2 id="h3s"><span class="step">2</span>Your details</h2>
       <h3 class="grp">Required info</h3>
       <div class="fields">
-        <div class="field"><label for="c-name">Name</label><input type="text" id="c-name" autocomplete="name" aria-required="true"></div>
-        <div class="field"><label for="c-phone">Phone</label><input type="tel" id="c-phone" autocomplete="tel" inputmode="tel" aria-required="true"></div>
-        <div class="field"><label for="c-timing">When do you want us?</label>
+        <div class="field"><label for="c-name">Name<span class="req" aria-hidden="true">*</span></label><input type="text" id="c-name" autocomplete="name" aria-required="true"></div>
+        <div class="field"><label for="c-phone">Phone<span class="req" aria-hidden="true">*</span></label><input type="tel" id="c-phone" autocomplete="tel" inputmode="tel" aria-required="true"></div>
+        <div class="field"><label for="c-timing">When do you want us?<span class="req" aria-hidden="true">*</span></label>
           <select id="c-timing" aria-required="true"><option value="">Choose one</option><option>As soon as possible</option><option>This week</option><option>Within two weeks</option><option>I am flexible</option></select></div>
       </div>
       <div class="errors" id="errors" role="alert" hidden style="margin-top:1rem"></div>
@@ -374,6 +377,7 @@ textarea { min-height: 5.5rem; resize: vertical; }
 <form name="quote" method="POST" action="/" data-netlify="true" netlify-honeypot="bot-field" enctype="multipart/form-data" hidden>
   <input type="hidden" name="form-name" value="quote">
   <p><label>Leave this empty <input name="bot-field"></label></p>
+  <input type="hidden" name="subject" data-remove-prefix value="New quote request">
   <input name="request-id">
   <input name="customer-name">
   <input name="phone">
@@ -652,25 +656,40 @@ document.addEventListener('input', render);
 document.addEventListener('change', render);
 
 function validate() {
-  const k = readContact(), errs = [];
-  if (!k.name) errs.push('Enter your name.');
-  if (k.phone.replace(/\D/g, '').length < 10) errs.push('Enter a phone number with area code.');
-  if (!k.timing) errs.push('Choose when you want us.');
+  const k = readContact(), errs = [], bad = [];
+  if (!k.name) { errs.push('Enter your name.'); bad.push('c-name'); }
+  if (k.phone.replace(/\D/g, '').length < 10) { errs.push('Enter a phone number with area code.'); bad.push('c-phone'); }
+  if (!k.timing) { errs.push('Choose when you want us.'); bad.push('c-timing'); }
+  errs.bad = bad;
   return errs;
 }
+let tried = false;
+function markBad(errs) {
+  ['c-name', 'c-phone', 'c-timing'].forEach(id => {
+    const on = errs.bad.includes(id);
+    $(id).closest('.field').classList.toggle('bad', on);
+    on ? $(id).setAttribute('aria-invalid', 'true') : $(id).removeAttribute('aria-invalid');
+  });
+  const box = $('errors');
+  box.textContent = '';
+  if (!errs.length) { box.hidden = true; return; }
+  box.textContent = 'Please fill in the boxes marked in red:';
+  const ul = document.createElement('ul');
+  errs.forEach(m => { const li = document.createElement('li'); li.textContent = m; ul.appendChild(li); });
+  box.appendChild(ul); box.hidden = false;
+}
 function submitForm() {
-  const errs = validate(), box = $('errors');
+  const errs = validate();
+  tried = true;
+  markBad(errs);
   if (errs.length) {
-    box.textContent = 'Please fill in the required info:';
-    const ul = document.createElement('ul');
-    errs.forEach(m => { const li = document.createElement('li'); li.textContent = m; ul.appendChild(li); });
-    box.appendChild(ul); box.hidden = false;
-    box.scrollIntoView({ block: 'center' });
+    const first = $(errs.bad[0]);
+    first.scrollIntoView({ block: 'center' }); first.focus({ preventScroll: true });
     return;
   }
-  box.hidden = true;
   sendRequest();
 }
+['input', 'change'].forEach(ev => document.addEventListener(ev, () => { if (tried) markBad(validate()); }));
 $('f').addEventListener('submit', e => { e.preventDefault(); submitForm(); });
 $('copy').addEventListener('click', async () => {
   const ta = $('req'), msg = $('copied');
@@ -766,6 +785,7 @@ async function sendRequest() {
   const fd = new FormData();
   fd.append('form-name', 'quote');
   fd.append('bot-field', '');
+  fd.append('subject', 'Quote request: ' + k.name); // client's name in the subject so each request gets its own email thread
   fd.append('request-id', id);
   fd.append('customer-name', k.name);
   fd.append('phone', k.phone);
