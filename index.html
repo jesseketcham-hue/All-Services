@@ -1,0 +1,806 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Request a Quote | The Cleanup Company</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+html { color-scheme: light; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; }
+[hidden] { display: none !important; }
+img { max-width: 100%; }
+/* Layout: one narrow column for phones opened from Instagram or Facebook. One list of services that open in place, then required and optional details and a live estimate. A fixed bar keeps the running total in view. */
+:root {
+  --bg: #F3F6EF;
+  --surface: #FFFFFF;
+  --ink: #1B2417;
+  --muted: #566251;
+  --line: #D8E0D1;
+  --accent: #2E7D16;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #E5F1DE;
+  --warn-bg: #FFF3D1;
+  --warn-ink: #6A4900;
+  --danger: #B3261E;
+  --font-display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11160F; --surface: #192015; --ink: #E8EEE3; --muted: #9BA896; --line: #2C3727;
+    --accent: #79C957; --accent-ink: #0D1A07; --accent-soft: #1E2E17;
+    --warn-bg: #33290D; --warn-ink: #F0D58A; --danger: #FF8A80;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11160F; --surface: #192015; --ink: #E8EEE3; --muted: #9BA896; --line: #2C3727;
+  --accent: #79C957; --accent-ink: #0D1A07; --accent-soft: #1E2E17;
+  --warn-bg: #33290D; --warn-ink: #F0D58A; --danger: #FF8A80;
+  color-scheme: dark;
+}
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+body {
+  background: var(--bg); color: var(--ink);
+  font: 400 1rem/1.5 var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 1rem 7rem;
+}
+*, *::before, *::after { box-sizing: border-box; }
+.wrap { max-width: 40rem; margin: 0 auto; display: grid; gap: 2rem; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.top { display: flex; align-items: center; gap: .75rem; }
+.top svg { flex: none; width: 3rem; height: 3rem; }
+.brand { margin: 0; font: 700 1.35rem/1.1 var(--font-display); letter-spacing: .02em; text-transform: uppercase; }
+.tag { margin: 0; color: var(--muted); font-size: .9rem; }
+h1 { margin: 0 0 .5rem; font: 700 2.4rem/1.02 var(--font-display); text-transform: uppercase; text-wrap: balance; }
+.intro p { margin: 0; max-width: 34rem; color: var(--muted); }
+h2 { margin: 0 0 .85rem; font: 700 1.5rem/1.1 var(--font-display); text-transform: uppercase; letter-spacing: .02em; display: flex; align-items: center; gap: .6rem; }
+.step { flex: none; display: inline-grid; place-items: center; width: 1.7rem; height: 1.7rem; border-radius: 50%; background: var(--accent); color: var(--accent-ink); font-size: 1rem; }
+.sub { margin: -.4rem 0 .85rem; color: var(--muted); font-size: .95rem; }
+
+
+.svcs { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; }
+.svc + .svc { border-top: 1px solid var(--line); }
+.svc.on { background: var(--accent-soft); }
+.svc-head { display: flex; align-items: center; gap: .85rem; padding: .85rem 1rem; min-height: 3.5rem; cursor: pointer; }
+.svc-head input { flex: none; width: 1.4rem; height: 1.4rem; accent-color: var(--accent); }
+.svc-name { display: block; font-weight: 600; font-size: 1.1rem; }
+.svc-sub { display: block; font-size: .88rem; color: var(--muted); }
+.svc-body { padding: .25rem 1rem 1.1rem; display: grid; gap: .9rem; background: var(--surface); }
+.fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: .8rem; }
+.field { display: grid; gap: .3rem; min-width: 0; align-content: start; }
+.field label, .lbl { font-size: .92rem; font-weight: 600; }
+.help { font-size: .84rem; color: var(--muted); margin: 0; }
+input[type=text], input[type=tel], input[type=email], input[type=number], select, textarea {
+  font: inherit; font-size: 1rem; color: var(--ink); background: var(--bg);
+  border: 1px solid var(--line); border-radius: 8px; padding: .65rem .75rem; min-height: 2.9rem; width: 100%; min-width: 0;
+}
+textarea { min-height: 5.5rem; resize: vertical; }
+.sub-opt { border: 1px dashed var(--line); border-radius: 8px; padding: .75rem; display: grid; gap: .75rem; }
+.chk { display: flex; align-items: flex-start; gap: .7rem; cursor: pointer; font-weight: 600; min-height: 2.75rem; align-items: center; }
+.chk input { flex: none; width: 1.3rem; height: 1.3rem; accent-color: var(--accent); }
+.chk small { display: block; font-weight: 400; color: var(--muted); font-size: .86rem; }
+.seg { display: flex; gap: .5rem; flex-wrap: wrap; }
+.seg label { position: relative; }
+.seg input { position: absolute; opacity: 0; inset: 0; }
+.seg span { display: inline-block; padding: .6rem 1rem; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); font-weight: 600; min-height: 2.75rem; }
+.seg input:checked + span { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.seg input:focus-visible + span { outline: 3px solid var(--accent); outline-offset: 2px; }
+.grp { margin: 1.6rem 0 .6rem; font: 700 1.15rem/1 var(--font-display); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.seg input:disabled + span { opacity: .45; cursor: not-allowed; }
+
+.est { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 1rem; display: grid; gap: .5rem; margin-bottom: 1rem; }
+.est h3 { margin: 0; font: 700 1.2rem/1 var(--font-display); text-transform: uppercase; letter-spacing: .03em; color: var(--muted); }
+.row { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; }
+.row > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.row small { display: block; color: var(--muted); font-size: .85rem; }
+.row .amt { flex: none; font-variant-numeric: tabular-nums; font-weight: 600; }
+.row.disc { color: var(--accent); }
+.row.pending .amt { color: var(--muted); font-weight: 400; font-size: .9rem; }
+.row.total { border-top: 2px solid var(--ink); padding-top: .6rem; margin-top: .3rem; align-items: center; }
+.row.total span:first-child { font: 700 1.2rem var(--font-display); text-transform: uppercase; }
+.row.total .amt { font: 700 2.1rem/1 var(--font-display); color: var(--accent); }
+.empty { margin: 0; color: var(--muted); }
+.fine { margin: 0; font-size: .86rem; color: var(--muted); }
+
+.btn { font: 600 1.05rem var(--font-body); background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 8px; padding: .8rem 1.3rem; min-height: 3rem; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+.btn.alt { background: transparent; color: var(--ink); border: 2px solid var(--ink); }
+.errors { margin: 0 0 1rem; padding: .8rem 1rem; border: 2px solid var(--danger); border-radius: 8px; color: var(--danger); font-weight: 600; }
+.errors ul { margin: .3rem 0 0; padding-left: 1.2rem; }
+.done { border: 2px solid var(--accent); border-radius: 10px; padding: 1rem; display: grid; gap: .8rem; background: var(--surface); margin-top: 1rem; }
+.done h3 { margin: 0; font: 700 1.5rem/1.05 var(--font-display); text-transform: uppercase; }
+.done p { margin: 0; }
+.done textarea { min-height: 14rem; font-size: .92rem; font-family: ui-monospace, Menlo, Consolas, monospace; }
+.actions { display: flex; gap: .6rem; flex-wrap: wrap; }
+.num { font-weight: 700; font-size: 1.15rem; user-select: all; }
+
+.bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: var(--surface); border-top: 1px solid var(--line);
+  padding: .6rem max(16px, env(safe-area-inset-right, 0px)) calc(.6rem + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.bar-in { max-width: 40rem; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.bar small { display: block; font-size: .8rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.bar strong { font: 700 1.8rem/1 var(--font-display); font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+      <circle cx="24" cy="24" r="24" fill="var(--accent)"/>
+      <g fill="none" stroke="var(--accent-ink)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M11 19V11h8M11 11l8 8"/><path d="M37 19V11h-8M37 11l-8 8"/>
+        <path d="M11 29v8h8M11 37l8-8"/><path d="M37 29v8h-8M37 37l-8-8"/>
+      </g>
+    </svg>
+    <div>
+      <p class="brand">The Cleanup Company</p>
+      <p class="tag">One call. We do it all.</p>
+    </div>
+  </header>
+
+  <section class="intro">
+    <h1>Get your quote</h1>
+    <p>Pick your services and watch the estimate update. When it looks right, tap Submit and we will confirm the final price before any work starts.</p>
+  </section>
+
+  <form id="f" novalidate>
+    <section aria-labelledby="h1s">
+      <h2 id="h1s"><span class="step">1</span>Choose your services</h2>
+      <p class="sub">Pick the services you need. Add details only if you want a price right now.</p>
+
+      <div class="svcs">
+        <div class="svc" id="s-prod">
+          <label class="svc-head" for="c-prod"><input type="checkbox" id="c-prod"><span><span class="svc-name">Production cleans</span><span class="svc-sub">Jobsite cleaning, recurring or one-off: sweeping and trash pickup, inside and out.</span></span></label>
+          <div class="svc-body" id="b-prod" hidden>
+            <div class="field"><span class="lbl" id="prod-lbl">How often</span>
+              <div class="seg" role="radiogroup" aria-labelledby="prod-lbl">
+                <label><input type="radio" name="prod-freq" value="weekly" checked><span>Weekly</span></label>
+                <label><input type="radio" name="prod-freq" value="biweekly"><span>Bi-weekly</span></label>
+                <label><input type="radio" name="prod-freq" value="oneoff"><span>One-off cleanup</span></label>
+              </div></div>
+            <div class="field"><span class="lbl">What do you need?</span>
+              <label class="chk" for="prod-sweep"><input type="checkbox" id="prod-sweep" checked><span>Sweeping</span></label>
+              <label class="chk" for="prod-trash"><input type="checkbox" id="prod-trash" checked><span>Trash pickup</span></label>
+              <p class="help" id="prod-help"></p></div>
+            <div class="field" id="prod-sf-f"><label for="prod-sf">Project size (sq ft)</label>
+              <input type="number" id="prod-sf" inputmode="numeric" min="0" step="500" placeholder="3000">
+              <p class="help">Square feet of the project we clean each visit.</p></div>
+            <div class="fields" id="prod-hr-f" hidden>
+              <div class="field"><label for="prod-crew">Crew members</label>
+                <input type="number" id="prod-crew" inputmode="numeric" min="1" step="1" placeholder="2"></div>
+              <div class="field"><label for="prod-hours">Hours per crew member</label>
+                <input type="number" id="prod-hours" inputmode="decimal" min="0" step="1" placeholder="4"></div>
+            </div>
+          </div>
+        </div>
+        <div class="svc" id="s-labor">
+          <label class="svc-head" for="c-labor"><input type="checkbox" id="c-labor"><span><span class="svc-name">General labor</span><span class="svc-sub">Anything else you need done, by the hour.</span></span></label>
+          <div class="svc-body" id="b-labor" hidden>
+            <div class="fields">
+              <div class="field"><label for="lab-crew">Crew members</label>
+                <input type="number" id="lab-crew" inputmode="numeric" min="1" step="1" placeholder="2"></div>
+              <div class="field"><label for="lab-hours">Hours per crew member</label>
+                <input type="number" id="lab-hours" inputmode="decimal" min="0" step="1" placeholder="4">
+                <p class="help">First hour is $150 per crew member and includes trip charge up to 30 miles. After that, $38 per hour per crew member.</p></div>
+            </div>
+            <div class="field"><label for="lab-desc">What do you need done?</label>
+              <textarea id="lab-desc" maxlength="200" rows="2"></textarea></div>
+          </div>
+        </div>
+        <div class="svc" id="s-demo">
+          <label class="svc-head" for="c-demo"><input type="checkbox" id="c-demo"><span><span class="svc-name">Demo work</span><span class="svc-sub">Tear-out and demolition, by the hour.</span></span></label>
+          <div class="svc-body" id="b-demo" hidden>
+            <div class="fields">
+              <div class="field"><label for="dem-crew">Crew members</label>
+                <input type="number" id="dem-crew" inputmode="numeric" min="1" step="1" placeholder="2"></div>
+              <div class="field"><label for="dem-hours">Hours per crew member</label>
+                <input type="number" id="dem-hours" inputmode="decimal" min="0" step="1" placeholder="4">
+                <p class="help">First hour is $150 per crew member and includes trip charge up to 30 miles. After that, $48 per hour per crew member.</p></div>
+            </div>
+            <div class="field"><label for="dem-desc">What do you need done?</label>
+              <textarea id="dem-desc" maxlength="200" rows="2"></textarea></div>
+          </div>
+        </div>
+        <div class="svc" id="s-pressure">
+          <label class="svc-head" for="c-pressure"><input type="checkbox" id="c-pressure"><span><span class="svc-name">Pressure washing</span><span class="svc-sub">House wash and concrete cleaning.</span></span></label>
+          <div class="svc-body" id="b-pressure" hidden>
+            <div class="sub-opt">
+              <label class="chk" for="c-house"><input type="checkbox" id="c-house"><span>House wash<small>Low pressure wash for dirt, dust and mold. $300 minimum.</small></span></label>
+              <div class="fields" id="house-f" hidden>
+                <div class="field"><label for="siding">Siding</label>
+                  <select id="siding"><option value="vinyl">Vinyl</option><option value="aluminum">Aluminum</option><option value="masonry">Stucco or brick</option></select></div>
+                <div class="field"><label for="house-sf">Home size (sq ft)</label>
+                  <input type="number" id="house-sf" inputmode="numeric" min="0" step="500" placeholder="2500">
+                  <p class="help">Check your listing or tax record if unsure.</p></div>
+              </div>
+            </div>
+            <div class="sub-opt">
+              <label class="chk" for="c-conc"><input type="checkbox" id="c-conc"><span>Concrete cleaning<small>Driveway, patio or walkway. $200 minimum.</small></span></label>
+              <div class="fields" id="conc-f" hidden>
+                <div class="field"><label for="conc-type">Level of clean</label>
+                  <select id="conc-type"><option value="deep">Deep clean</option><option value="rinse">Rinse</option></select></div>
+                <div class="field"><span class="lbl" id="conc-how-lbl">How big is it?</span>
+                  <div class="seg" role="radiogroup" aria-labelledby="conc-how-lbl">
+                    <label><input type="radio" name="conc-how" value="enter" checked><span>I will enter it</span></label>
+                    <label><input type="radio" name="conc-how" value="measure" id="conc-measure"><span>Measure it for me</span></label>
+                  </div>
+                  <p class="help" id="conc-measure-help"></p></div>
+                <div class="field" id="conc-sf-f"><label for="conc-sf">Area (sq ft)</label>
+                  <input type="number" id="conc-sf" inputmode="numeric" min="0" step="50" placeholder="500">
+                  <p class="help">A two-car driveway is about 400 to 600 sq ft.</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="svc" id="s-windows">
+          <label class="svc-head" for="c-windows"><input type="checkbox" id="c-windows"><span><span class="svc-name">Window cleaning</span><span class="svc-sub">Squeegee finish, no smears. $200 minimum.</span></span></label>
+          <div class="svc-body" id="b-windows" hidden>
+            <div class="field"><label for="win-count">Number of windows</label>
+              <input type="number" id="win-count" inputmode="numeric" min="0" step="1" placeholder="20"></div>
+            <div class="field"><span class="lbl" id="win-lbl">Which sides</span>
+              <div class="seg" role="radiogroup" aria-labelledby="win-lbl">
+                <label><input type="radio" name="win-sides" value="exterior"><span>Outside</span></label>
+                <label><input type="radio" name="win-sides" value="interior"><span>Inside</span></label>
+                <label><input type="radio" name="win-sides" value="both" checked><span>Inside and out</span></label>
+              </div>
+              <p class="help">$9 per window outside, $5 per window inside.</p></div>
+          </div>
+        </div>
+        <div class="svc" id="s-final">
+          <label class="svc-head" for="c-final"><input type="checkbox" id="c-final"><span><span class="svc-name">Final cleaning</span><span class="svc-sub">Deep clean of everything inside after a build or remodel. 40¢ per sq ft.</span></span></label>
+          <div class="svc-body" id="b-final" hidden>
+            <div class="field"><label for="fin-sf">Interior size (sq ft)</label>
+              <input type="number" id="fin-sf" inputmode="numeric" min="0" step="500" placeholder="2500">
+              <p class="help">Cabinets, trim, doors, mirrors, window frames and tracks, bathrooms and floors. Window glass and exterior work are separate services.</p></div>
+          </div>
+        </div>
+        <div class="svc" id="s-puff">
+          <label class="svc-head" for="c-puff"><input type="checkbox" id="c-puff"><span><span class="svc-name">Puff clean</span><span class="svc-sub">Light clean: mop hard floors, vacuum carpets, clean countertops. 8¢ per sq ft.</span></span></label>
+          <div class="svc-body" id="b-puff" hidden>
+            <div class="field"><label for="puff-sf">Interior size (sq ft)</label>
+              <input type="number" id="puff-sf" inputmode="numeric" min="0" step="500" placeholder="2500">
+              <p class="help">Need more than this? Tell us in the notes.</p></div>
+          </div>
+        </div>
+        <div class="svc" id="s-gutter">
+          <label class="svc-head" for="c-gutter"><input type="checkbox" id="c-gutter"><span><span class="svc-name">Gutter cleanout</span><span class="svc-sub">Cleans gutters and flushes downspouts. Priced by home size and height.</span></span></label>
+          <div class="svc-body" id="b-gutter" hidden>
+            <div class="fields">
+              <div class="field"><label for="gutter-h">Home height</label>
+                <select id="gutter-h"><option value="">Choose one</option><option value="one">1-story</option><option value="two">2-story</option><option value="three">3-story or walkout basement</option></select></div>
+              <div class="field"><label for="gutter-sf">Home size (sq ft)</label>
+                <input type="number" id="gutter-sf" inputmode="numeric" min="0" step="500" placeholder="2500">
+                <p class="help">Finished square footage. Check your listing or tax record if unsure.</p></div>
+            </div>
+            <div class="field"><span class="lbl" id="guard-lbl">Do you have mesh screens, solid covers or gutter guards?</span>
+              <div class="seg" role="radiogroup" aria-labelledby="guard-lbl">
+                <label><input type="radio" name="guards" value="no" checked><span>No</span></label>
+                <label><input type="radio" name="guards" value="yes"><span>Yes</span></label>
+              </div>
+              <p class="help" id="guard-help" hidden>Guards have to come off and go back on, which is priced as an add-on. Our price covers standard clip-in or screw-in mesh screens. Glued hoods, custom reverse-curve helmets and badly damaged gutters need an on-site look, so the price may change.</p></div>
+            <p class="help">Includes clearing debris, flushing downspouts and blowing off walkways, patios and driveways. Underground drain snaking and structural repairs cost extra.</p>
+          </div>
+        </div>
+        <div class="svc" id="s-duct">
+          <label class="svc-head" for="c-duct"><input type="checkbox" id="c-duct"><span><span class="svc-name">Duct cleaning</span><span class="svc-sub">Full vacuum extraction with dust containment.</span></span></label>
+          <div class="svc-body" id="b-duct" hidden>
+            <div class="fields">
+              <div class="field"><label for="d-sys">HVAC systems</label>
+                <input type="number" id="d-sys" inputmode="numeric" min="0" step="1" placeholder="1">
+                <p class="help">Number of heating and cooling units.</p></div>
+              <div class="field"><label for="d-sup">Supply vents</label>
+                <input type="number" id="d-sup" inputmode="numeric" min="0" step="10" placeholder="12">
+                <p class="help">Vents that blow air into rooms.</p></div>
+              <div class="field"><label for="d-ret">Return vents</label>
+                <input type="number" id="d-ret" inputmode="numeric" min="0" step="1" placeholder="2">
+                <p class="help">Larger grilles that pull air back.</p></div>
+            </div>
+            <label class="chk" for="d-mold"><input type="checkbox" id="d-mold"><span>Mold-killing spray<small>EPA-registered. $95 per system.</small></span></label>
+            <label class="chk" for="d-dryer"><input type="checkbox" id="d-dryer"><span>Clothes dryer vent cleaning<small>$135.</small></span></label>
+          </div>
+        </div>
+        <div class="svc" id="s-mow">
+          <label class="svc-head" for="c-mow"><input type="checkbox" id="c-mow"><span><span class="svc-name">Mowing and weed eating</span><span class="svc-sub">Priced for each job. We confirm the price after seeing your yard.</span></span></label>
+          <div class="svc-body" id="b-mow" hidden>
+            <div class="field"><label for="mow-lot">Yard size</label>
+              <select id="mow-lot"><option value="">Not sure</option><option>Under ¼ acre</option><option>¼ to ½ acre</option><option>½ to 1 acre</option><option>Over 1 acre</option></select></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="h3s" style="margin-top:2rem">
+      <h2 id="h3s"><span class="step">2</span>Your details</h2>
+      <h3 class="grp">Required info</h3>
+      <div class="fields">
+        <div class="field"><label for="c-name">Name</label><input type="text" id="c-name" autocomplete="name" aria-required="true"></div>
+        <div class="field"><label for="c-phone">Phone</label><input type="tel" id="c-phone" autocomplete="tel" inputmode="tel" aria-required="true"></div>
+        <div class="field"><label for="c-timing">When do you want us?</label>
+          <select id="c-timing" aria-required="true"><option value="">Choose one</option><option>As soon as possible</option><option>This week</option><option>Within two weeks</option><option>I am flexible</option></select></div>
+      </div>
+      <div class="errors" id="errors" role="alert" hidden style="margin-top:1rem"></div>
+
+      <h3 class="grp">Optional info</h3>
+      <p class="sub">The more you tell us, the more exact your price.</p>
+      <div class="fields">
+        <div class="field"><label for="c-email">Email</label><input type="email" id="c-email" autocomplete="email"></div>
+        <div class="field"><label for="c-street">Street address</label><input type="text" id="c-street" autocomplete="street-address"></div>
+        <div class="field"><label for="c-city">City</label><input type="text" id="c-city" autocomplete="address-level2"></div>
+        <div class="field"><label for="c-zip">ZIP</label><input type="text" id="c-zip" autocomplete="postal-code" inputmode="numeric"></div>
+        <div class="field"><label for="dist">Distance from downtown Nashville</label>
+          <select id="dist"><option value="">Choose one</option><option value="15">Up to 15 miles</option><option value="25">15 to 25 miles</option><option value="30">25 to 30 miles</option><option value="over">Over 30 miles</option></select>
+          <p class="help">A best guess is fine. It sets your trip charge, which applies once per service.</p></div>
+        <div class="field" id="miles-f" hidden><label for="miles">Miles from downtown</label>
+          <input type="number" id="miles" inputmode="numeric" min="31" step="1" placeholder="35"></div>
+      </div>
+      <div class="field" style="margin-top:.8rem"><label for="c-notes">Anything else we should know?</label><textarea id="c-notes"></textarea></div>
+    </section>
+
+    <section id="send" aria-labelledby="h4s" style="margin-top:2rem">
+      <h2 id="h4s">Your estimate</h2>
+      <div class="est" id="est" aria-live="polite"></div>
+
+      <div class="done" id="done" hidden role="status">
+        <h3 id="done-h"></h3>
+        <p id="done-p"></p>
+        <textarea id="req" readonly aria-label="Your quote request" hidden></textarea>
+        <div class="actions" id="backup" hidden>
+          <button type="button" class="btn alt" id="copy">Copy my request</button>
+          <a class="btn alt" id="sms" href="#">Open a text message</a>
+          <a class="btn alt" href="tel:+13608536789">Call us</a>
+        </div>
+        <p class="fine" id="copied" role="status"></p>
+      </div>
+    </section>
+  </form>
+</div>
+
+<div class="bar">
+  <div class="bar-in">
+    <div><small>Estimated total</small><strong id="bar-total">Pick a service</strong></div>
+    <button type="button" class="btn" id="submit-btn">Submit</button>
+  </div>
+</div>
+
+<!-- Netlify reads this form when the site is deployed so it knows which fields to collect. The visible form above sends its data to it with JavaScript. -->
+<form name="quote" method="POST" action="/" data-netlify="true" netlify-honeypot="bot-field" enctype="multipart/form-data" hidden>
+  <input type="hidden" name="form-name" value="quote">
+  <p><label>Leave this empty <input name="bot-field"></label></p>
+  <input name="request-id">
+  <input name="customer-name">
+  <input name="phone">
+  <input name="email">
+  <input name="address">
+  <input name="timing">
+  <input name="distance">
+  <input name="estimated-total">
+  <textarea name="services"></textarea>
+  <textarea name="notes"></textarea>
+  <textarea name="full-request"></textarea>
+  <input type="file" name="quote-pdf">
+</form>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+<script>
+//PURE-START
+const PRICES = {
+  // Gutter prices come from the gutter rate card.
+  gutter: {
+    one: { label: '1-story', clean: 185, guard: 135 },
+    two: { label: '2-story', clean: 295, guard: 195 },
+    three: { label: '3-story or walkout basement', clean: 395, guard: 265 },
+    tiers: [{ max: 2500, mult: 1 }, { max: 4000, mult: 1.25 }, { max: 5500, mult: 1.5 }, { max: 7000, mult: 1.75 }]
+  },
+  house: { vinyl: { label: 'Vinyl', rate: 0.25 }, aluminum: { label: 'Aluminum', rate: 0.30 }, masonry: { label: 'Stucco or brick', rate: 0.35 }, min: 300 },
+  concrete: { deep: { label: 'Deep clean', rate: 0.25 }, rinse: { label: 'Rinse', rate: 0.18 }, min: 200 },
+  windows: { interior: 5, exterior: 9, min: 200 },
+  duct: { system: 200, supply: 38, ret: 52, trunk: 52, min: 400, mold: 95, dryer: 135 },
+  fallPct: 0.10,
+  finalClean: { rate: 0.40 },
+  puff: { rate: 0.08 },
+  prod: { weekly: 0.05, biweekly: 0.08 },
+  hourly: { labor: 38, demo: 48, first: 150 },
+  trip: { '15': 20, '25': 40, '30': 55 },
+  over: { base: 55, perMile: 2, after: 30 }
+};
+const DIST = { '15': 'Up to 15 miles', '25': '15 to 25 miles', '30': '25 to 30 miles', over: 'Over 30 miles' };
+const r2 = n => Math.round(n * 100) / 100;
+const cnt = v => { const n = Math.floor(Number(v)); return n > 0 ? n : 0; };
+const num = v => { const n = Number(v); return n > 0 ? n : 0; };
+function money(n) {
+  return '$' + (Number.isInteger(n) ? n.toLocaleString('en-US') : n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+}
+const otherVisit = s => !!(Object.keys(s.svc).some(k => k !== 'pressure' && s.svc[k]) || s.pw.house);
+// First hour is $150 per crew member (trip included up to 30 miles), then the hourly rate for each hour after
+function hourPay(hrs, rate) { return PRICES.hourly.first + Math.max(0, hrs - 1) * rate; }
+function compute(s) {
+  const lines = [];
+  const add = (svc, label, detail, amount, extra) => lines.push(Object.assign({ svc, label, detail, amount }, extra));
+  if (s.svc.gutter) {
+    const t = PRICES.gutter[s.gutter.height], sf = num(s.gutter.sf);
+    if (!t) add('gutter', 'Gutter cleanout', 'Choose your home height', null);
+    else if (sf <= 0) add('gutter', 'Gutter cleanout', 'Enter your home size', null);
+    else {
+      const tier = PRICES.gutter.tiers.find(x => sf <= x.max);
+      if (!tier) add('gutter', 'Gutter cleanout', 'Homes over 7,000 sq ft get a custom quote', null, { custom: true });
+      else {
+        const d = t.label + ', ' + sf.toLocaleString('en-US') + ' sq ft';
+        add('gutter', 'Gutter cleanout', d, r2(t.clean * tier.mult), { key: 'clean' });
+        if (s.gutter.guards) add('gutter', 'Gutter guard removal and reinstall', d, r2(t.guard * tier.mult), { key: 'guard' });
+      }
+    }
+  }
+  if (s.svc.pressure) {
+    if (!s.pw.house && !s.pw.conc) add('pressure', 'Pressure washing', 'Choose house wash or concrete', null);
+    if (s.pw.house) {
+      const t = PRICES.house[s.pw.siding], sf = num(s.pw.houseSf);
+      if (t && sf > 0) {
+        const raw = sf * t.rate, amt = Math.max(raw, PRICES.house.min);
+        add('pressure', 'House wash', t.label + ', ' + sf.toLocaleString('en-US') + ' sq ft' + (raw < PRICES.house.min ? ', minimum applied' : ''), r2(amt));
+      } else add('pressure', 'House wash', 'Enter your home size', null);
+    }
+    if (s.pw.conc) {
+      const t = PRICES.concrete[s.pw.concType], sf = num(s.pw.concSf);
+      if (s.pw.concHow === 'measure' && otherVisit(s)) {
+        add('pressure', 'Concrete ' + t.label.toLowerCase(), 'We measure it when we are there for your other service', null, { custom: true, tag: 'Priced on site' });
+      } else if (t && sf > 0) {
+        const raw = sf * t.rate, amt = Math.max(raw, PRICES.concrete.min);
+        add('pressure', 'Concrete ' + t.label.toLowerCase(), sf.toLocaleString('en-US') + ' sq ft' + (raw < PRICES.concrete.min ? ', minimum applied' : ''), r2(amt));
+      } else add('pressure', 'Concrete cleaning', 'Enter the area', null);
+    }
+  }
+  if (s.svc.windows) {
+    const n = cnt(s.win.count);
+    if (n > 0) {
+      const rate = s.win.sides === 'interior' ? PRICES.windows.interior : s.win.sides === 'exterior' ? PRICES.windows.exterior : PRICES.windows.interior + PRICES.windows.exterior;
+      const raw = n * rate, amt = Math.max(raw, PRICES.windows.min);
+      const side = s.win.sides === 'interior' ? 'inside' : s.win.sides === 'exterior' ? 'outside' : 'inside and out';
+      add('windows', 'Window cleaning', n + ' windows, ' + side + (raw < PRICES.windows.min ? ', minimum applied' : ''), r2(amt));
+    } else add('windows', 'Window cleaning', 'Enter the number of windows', null);
+  }
+  if (s.svc.duct) {
+    const sys = cnt(s.duct.systems), sup = cnt(s.duct.supply), ret = cnt(s.duct.returns), D = PRICES.duct;
+    if (sys > 0) {
+      const raw = sys * (D.system + D.trunk) + sup * D.supply + ret * D.ret, amt = Math.max(raw, D.min);
+      add('duct', 'Duct cleaning', sys + (sys === 1 ? ' system, ' : ' systems, ') + sup + ' supply, ' + ret + ' return' + (raw < D.min ? ', minimum applied' : ''), r2(amt));
+      if (s.duct.mold) add('duct', 'Mold-killing spray', sys + (sys === 1 ? ' system' : ' systems'), sys * D.mold);
+      if (s.duct.dryer) add('duct', 'Dryer vent cleaning', 'One dryer vent line', D.dryer);
+    } else add('duct', 'Duct cleaning', 'Enter your HVAC systems and vents', null);
+  }
+
+  if (s.svc.final) {
+    const sf = num(s.fin.sf);
+    sf > 0 ? add('final', 'Final cleaning', sf.toLocaleString('en-US') + ' sq ft', r2(sf * PRICES.finalClean.rate)) : add('final', 'Final cleaning', 'Enter the interior size', null);
+  }
+  if (s.svc.puff) {
+    const sf = num(s.puff.sf);
+    sf > 0 ? add('puff', 'Puff clean', sf.toLocaleString('en-US') + ' sq ft', r2(sf * PRICES.puff.rate)) : add('puff', 'Puff clean', 'Enter the interior size', null);
+  }
+  if (s.svc.prod) {
+    const o = s.prod, what = o.sweep && o.trash ? 'sweeping and trash pickup' : o.sweep ? 'sweeping only' : o.trash ? 'trash pickup only' : '';
+    if (!what) add('prod', 'Production cleans', 'Choose sweeping, trash pickup or both', null);
+    else if (o.freq === 'oneoff') {
+      const crew = cnt(o.crew), hrs = num(o.hours);
+      if (crew > 0 && hrs > 0) {
+        const per = hourPay(hrs, PRICES.hourly.labor);
+        add('prod', 'Production cleans', 'One-off, ' + what + ', ' + crew + (crew === 1 ? ' crew member, ' : ' crew members, ') + hrs + (hrs === 1 ? ' hour each' : ' hours each'), r2(crew * per));
+      } else add('prod', 'Production cleans', 'Enter crew size and hours', null);
+    } else {
+      const sf = num(o.sf), wk = o.freq !== 'biweekly', rate = (wk ? PRICES.prod.weekly : PRICES.prod.biweekly) * (o.sweep && o.trash ? 1 : 0.5);
+      sf > 0 ? add('prod', 'Production cleans', (wk ? 'Weekly' : 'Bi-weekly') + ', ' + what + ', ' + sf.toLocaleString('en-US') + ' sq ft, price per visit', r2(sf * rate)) : add('prod', 'Production cleans', 'Enter the project size', null);
+    }
+  }
+  if (s.svc.mow) add('mow', 'Mowing and weed eating', (s.mow.lot ? s.mow.lot + ', ' : '') + 'priced for your job', null, { custom: true, tag: 'Custom quote' });
+  const hourly = (svc, label, rate, o) => {
+    const crew = cnt(o.crew), hrs = num(o.hours);
+    if (crew > 0 && hrs > 0) {
+      const per = hourPay(hrs, rate);
+      add(svc, label, crew + (crew === 1 ? ' crew member, ' : ' crew members, ') + hrs + (hrs === 1 ? ' hour each' : ' hours each') + (o.desc ? '. ' + o.desc : ''), r2(crew * per));
+    } else add(svc, label, 'Enter crew size and hours', null);
+  };
+  if (s.svc.labor) hourly('labor', 'General labor', PRICES.hourly.labor, s.labor);
+  if (s.svc.demo) hourly('demo', 'Demo work', PRICES.hourly.demo, s.demo);
+
+  const ORDER = ['prod', 'labor', 'demo', 'pressure', 'windows', 'final', 'puff', 'gutter', 'duct', 'mow']; // same order as the form
+  lines.sort((a, b) => ORDER.indexOf(a.svc) - ORDER.indexOf(b.svc));
+  lines.forEach(l => {
+    if (l.amount == null && !l.tag) l.tag = l.custom ? 'Custom quote' : 'To be quoted';
+    if (l.amount == null && !l.custom) { l.hint = l.detail; l.detail = 'No details given'; }
+  });
+  const priced = lines.filter(l => l.amount != null);
+
+  const groups = [['gutter'], ['pressure'], ['windows'], ['duct'], ['final', 'puff'], ['prod'], ['mow'], ['labor', 'demo']]; // one trip charge per group
+  const isHourly = g => g[0] === 'labor' || (g[0] === 'prod' && s.prod.freq === 'oneoff');
+  const active = groups.filter(g => g.some(k => s.svc[k]));
+  const hCount = active.filter(isHourly).length, count = active.length - hCount;
+  let fee = null, hFee = null, tlabel = DIST[s.dist] || '';
+  if (PRICES.trip[s.dist] != null) { fee = PRICES.trip[s.dist]; hFee = 0; }
+  else if (s.dist === 'over') {
+    const m = num(s.miles);
+    fee = PRICES.over.base + PRICES.over.perMile * Math.max(0, m - PRICES.over.after);
+    hFee = m > 0 ? PRICES.over.perMile * Math.max(0, m - PRICES.over.after) : null;
+    if (!(m > 0)) fee = null;
+    tlabel = m > 0 ? m + ' miles' : 'Over 30 miles';
+  }
+  const parts = [];
+  if (count > 0) parts.push(count + (count === 1 ? ' service' : ' services') + ' x ' + (fee == null ? '?' : money(fee)));
+  if (hCount > 0) parts.push(hCount + ' hourly ' + (hCount === 1 ? 'service' : 'services') + (hFee === 0 ? ' (included)' : ' x ' + (hFee == null ? '?' : money(hFee))));
+  const unknown = (count > 0 && fee == null) || (hCount > 0 && hFee == null);
+  const trip = { label: tlabel, fee, hFee, count: count + hCount, desc: parts.join(' + '), amount: unknown ? null : r2((fee || 0) * count + (hFee || 0) * hCount) };
+
+  const subtotal = priced.reduce((a, l) => a + l.amount, 0);
+  const anyPriced = priced.length > 0;
+  const hasCustom = lines.some(l => l.amount == null);
+  const tripPending = count > 0 && trip.amount == null;
+  const total = anyPriced ? r2(subtotal + (trip.amount || 0)) : null;
+  return { lines, trip, subtotal, total, anyPriced, hasCustom, tripPending };
+}
+function totalNote(c) {
+  const p = [];
+  if (c.hasCustom) p.push('items to be quoted');
+  if (c.tripPending) p.push('trip charges');
+  return p.length ? 'Does not include ' + p.join(' or ') + '.' : '';
+}
+const lineAmt = l => l.amount == null ? l.tag.toLowerCase() : money(l.amount);
+const tripText = c => c.trip.amount == null ? 'Trip charges: to be confirmed' : 'Trip charges (' + c.trip.desc + '): ' + money(c.trip.amount);
+const addrText = k => [k.street, [k.city, k.zip].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+const totalText = c => (c.total == null ? 'to be quoted' : money(c.total)) + (totalNote(c) ? ' (' + totalNote(c).replace(/\.$/, '').toLowerCase() + ')' : '');
+function buildRequest(s, c, k) {
+  const out = ['QUOTE REQUEST, The Cleanup Company', '', 'Name: ' + k.name, 'Phone: ' + k.phone, 'Preferred timing: ' + k.timing];
+  if (k.email) out.push('Email: ' + k.email);
+  if (addrText(k)) out.push('Address: ' + addrText(k));
+  if (c.trip.label) out.push('Distance from Nashville center: ' + c.trip.label);
+  out.push('', 'Services:');
+  if (!c.lines.length) out.push('- None selected');
+  c.lines.forEach(l => out.push('- ' + l.label + ' (' + l.detail + '): ' + lineAmt(l)));
+  if (c.trip.count > 0) out.push('- ' + tripText(c));
+  out.push('', 'Estimated total: ' + totalText(c));
+  if (k.notes) out.push('', 'Notes: ' + k.notes);
+  return out.join('\n');
+}
+//PURE-END
+
+const $ = id => document.getElementById(id);
+const SVC = ['prod', 'labor', 'demo', 'pressure', 'windows', 'final', 'puff', 'gutter', 'duct', 'mow'];
+
+function readState() {
+  return {
+    svc: Object.fromEntries(SVC.map(k => [k, $('c-' + k).checked])),
+    gutter: { height: $('gutter-h').value, sf: $('gutter-sf').value, guards: (document.querySelector('input[name="guards"]:checked') || { value: 'no' }).value === 'yes' },
+    pw: { house: $('c-house').checked, siding: $('siding').value, houseSf: $('house-sf').value, conc: $('c-conc').checked, concType: $('conc-type').value, concSf: $('conc-sf').value, concHow: (document.querySelector('input[name="conc-how"]:checked') || { value: 'enter' }).value },
+    win: { count: $('win-count').value, sides: (document.querySelector('input[name="win-sides"]:checked') || { value: 'both' }).value },
+    duct: { systems: $('d-sys').value, supply: $('d-sup').value, returns: $('d-ret').value, mold: $('d-mold').checked, dryer: $('d-dryer').checked },
+    fin: { sf: $('fin-sf').value },
+    puff: { sf: $('puff-sf').value },
+    prod: { freq: (document.querySelector('input[name="prod-freq"]:checked') || { value: 'weekly' }).value, sf: $('prod-sf').value, sweep: $('prod-sweep').checked, trash: $('prod-trash').checked, crew: $('prod-crew').value, hours: $('prod-hours').value },
+    mow: { lot: $('mow-lot').value },
+    labor: { crew: $('lab-crew').value, hours: $('lab-hours').value, desc: $('lab-desc').value.trim() },
+    demo: { crew: $('dem-crew').value, hours: $('dem-hours').value, desc: $('dem-desc').value.trim() },
+    dist: $('dist').value, miles: $('miles').value
+  };
+}
+function readContact() {
+  const v = id => $(id).value.trim();
+  return { name: v('c-name'), phone: v('c-phone'), email: v('c-email'), street: v('c-street'), city: v('c-city'), zip: v('c-zip'), timing: $('c-timing').value, notes: v('c-notes') };
+}
+function ensurePressureDefault() {
+  if ($('c-pressure').checked && !$('c-house').checked && !$('c-conc').checked) $('c-house').checked = true;
+}
+function row(cls, label, detail, amtText) {
+  const r = document.createElement('div'); r.className = 'row ' + cls;
+  const a = document.createElement('span'); a.textContent = label;
+  if (detail) { const d = document.createElement('small'); d.textContent = detail; a.appendChild(d); }
+  const b = document.createElement('span'); b.className = 'amt'; b.textContent = amtText;
+  r.append(a, b); return r;
+}
+function render() {
+  const s = readState(), c = compute(s);
+  SVC.forEach(k => {
+    $('b-' + k).hidden = !s.svc[k];
+    $('s-' + k).classList.toggle('on', s.svc[k]);
+  });
+  $('house-f').hidden = !s.pw.house;
+  $('conc-f').hidden = !s.pw.conc;
+  $('miles-f').hidden = s.dist !== 'over';
+  $('guard-help').hidden = !s.gutter.guards;
+  const pf = s.prod.freq;
+  $('prod-sf-f').hidden = pf === 'oneoff';
+  $('prod-hr-f').hidden = pf !== 'oneoff';
+  $('prod-help').textContent = pf === 'oneoff'
+    ? 'One-off cleanups: first hour is $150 per crew member and includes trip charge up to 30 miles. After that, $38 per hour per crew member.'
+    : (pf === 'weekly' ? 'Weekly is 5¢ per sq ft for sweeping and trash pickup together, or half of that for just one.' : 'Bi-weekly is 8¢ per sq ft for sweeping and trash pickup together, or half of that for just one.');
+  const other = otherVisit(s), mr = $('conc-measure');
+  mr.disabled = !other;
+  if (!other && mr.checked) document.querySelector('input[name="conc-how"][value="enter"]').checked = true;
+  $('conc-sf-f').hidden = mr.checked;
+  $('conc-measure-help').textContent = other
+    ? 'We measure when we are there for your other service and confirm the price then. $200 minimum.'
+    : 'We can measure it for you when we are already there for another service. Add one above to use this.';
+
+  const est = $('est'); est.textContent = '';
+  const h = document.createElement('h3'); h.textContent = 'Your selections'; est.appendChild(h);
+  if (!c.lines.length) {
+    const p = document.createElement('p'); p.className = 'empty'; p.textContent = 'Choose a service above to see your price.'; est.appendChild(p);
+  } else {
+    c.lines.forEach(l => est.appendChild(l.amount == null ? row('pending', l.label, l.hint || l.detail, l.tag) : row('', l.label, l.detail, money(l.amount))));
+    if (c.trip.count > 0) est.appendChild(c.trip.amount == null
+      ? row('pending', 'Trip charges', 'Add how far you are to include them', 'To be confirmed')
+      : row('', 'Trip charges', c.trip.desc.replace(/ x /g, ' × ') + ', ' + c.trip.label, money(c.trip.amount)));
+    if (c.anyPriced) est.appendChild(row('total', 'Estimated total', '', money(c.total)));
+    const f = document.createElement('p'); f.className = 'fine';
+    f.textContent = 'This is an estimate from the details you entered. We confirm the final price before any work starts.' + (totalNote(c) ? ' ' + totalNote(c) : '');
+    est.appendChild(f);
+  }
+  $('bar-total').textContent = c.anyPriced ? money(c.total) : (c.lines.length ? 'To be quoted' : 'Pick a service');
+}
+$('c-pressure').addEventListener('change', ensurePressureDefault);
+function syncSf(a, b) {
+  a.addEventListener('input', () => {
+    a.dataset.auto = '0';
+    if (b.value === '' || b.dataset.auto === '1') { b.value = a.value; b.dataset.auto = '1'; }
+  });
+}
+syncSf($('house-sf'), $('gutter-sf'));
+syncSf($('gutter-sf'), $('house-sf'));
+document.addEventListener('input', render);
+document.addEventListener('change', render);
+
+function validate() {
+  const k = readContact(), errs = [];
+  if (!k.name) errs.push('Enter your name.');
+  if (k.phone.replace(/\D/g, '').length < 10) errs.push('Enter a phone number with area code.');
+  if (!k.timing) errs.push('Choose when you want us.');
+  return errs;
+}
+function submitForm() {
+  const errs = validate(), box = $('errors');
+  if (errs.length) {
+    box.textContent = 'Please fill in the required info:';
+    const ul = document.createElement('ul');
+    errs.forEach(m => { const li = document.createElement('li'); li.textContent = m; ul.appendChild(li); });
+    box.appendChild(ul); box.hidden = false;
+    box.scrollIntoView({ block: 'center' });
+    return;
+  }
+  box.hidden = true;
+  sendRequest();
+}
+$('f').addEventListener('submit', e => { e.preventDefault(); submitForm(); });
+$('copy').addEventListener('click', async () => {
+  const ta = $('req'), msg = $('copied');
+  let ok = false;
+  try { await navigator.clipboard.writeText(ta.value); ok = true; }
+  catch (err) { ta.focus(); ta.select(); try { ok = document.execCommand('copy'); } catch (e2) { ok = false; } }
+  msg.textContent = ok ? 'Copied. Paste it into a text to (360) 853-6789.' : 'Select the text above, copy it, then text it to (360) 853-6789.';
+});
+//PDF-START
+function makeId() {
+  const d = new Date(), p = n => String(n).padStart(2, '0');
+  return 'TCC-' + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+}
+function makePdf(s, c, k, id) {
+  const J = window.jspdf && window.jspdf.jsPDF;
+  if (!J) return null;
+  const doc = new J({ unit: 'pt', format: 'letter' });
+  const M = 48, R = 612 - M;
+  let y = 60;
+  const green = [46, 125, 22], ink = [27, 36, 23], muted = [86, 98, 81];
+  const room = n => { if (y + n > 735) { doc.addPage(); y = 60; } };
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.setTextColor(...green);
+  doc.text('THE CLEANUP COMPANY', M, y);
+  doc.setFontSize(16); doc.text('QUOTE REQUEST', R, y, { align: 'right' });
+  y += 16;
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(...muted);
+  doc.text('One call. We do it all.   (360) 853-6789', M, y);
+  doc.text(id + '   ' + new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), R, y, { align: 'right' });
+  y += 10; doc.setDrawColor(...green); doc.setLineWidth(1.5); doc.line(M, y, R, y); y += 24;
+
+  doc.setTextColor(...ink); doc.setFontSize(11);
+  const info = [['Name', k.name], ['Phone', k.phone], ['Preferred timing', k.timing]];
+  if (k.email) info.push(['Email', k.email]);
+  if (addrText(k)) info.push(['Address', addrText(k)]);
+  if (c.trip.label) info.push(['Distance from Nashville center', c.trip.label]);
+  info.forEach(([a, b]) => {
+    room(20);
+    doc.setFont('helvetica', 'bold'); doc.text(a + ':', M, y);
+    doc.setFont('helvetica', 'normal');
+    const w = doc.splitTextToSize(String(b), R - M - 190);
+    doc.text(w, M + 190, y); y += 15 * w.length;
+  });
+
+  y += 12; doc.setFillColor(229, 241, 222); doc.rect(M, y - 13, R - M, 21, 'F');
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
+  doc.text('SERVICE', M + 6, y); doc.text('DETAILS', M + 190, y); doc.text('AMOUNT', R - 6, y, { align: 'right' });
+  y += 24;
+  c.lines.forEach(l => {
+    const det = doc.splitTextToSize(l.detail, 230), lab = doc.splitTextToSize(l.label, 175);
+    const n = Math.max(det.length, lab.length);
+    room(n * 13 + 16);
+    doc.setFont('helvetica', 'bold'); doc.setTextColor(...ink); doc.text(lab, M + 6, y);
+    doc.setFont('helvetica', 'normal'); doc.setTextColor(...muted); doc.text(det, M + 190, y);
+    doc.setTextColor(...ink); doc.text(l.amount == null ? l.tag : money(l.amount), R - 6, y, { align: 'right' });
+    y += n * 13 + 4; doc.setDrawColor(216, 224, 209); doc.setLineWidth(0.5); doc.line(M, y, R, y); y += 14;
+  });
+  doc.setFont('helvetica', 'normal'); doc.setTextColor(...green);
+  doc.setTextColor(...ink);
+  room(24);
+  if (c.trip.count > 0) {
+    doc.text(c.trip.amount == null ? 'Trip charges' : 'Trip charges (' + c.trip.desc + ')', M + 6, y);
+    doc.text(c.trip.amount == null ? 'To be confirmed' : money(c.trip.amount), R - 6, y, { align: 'right' });
+  }
+  y += 14; doc.setDrawColor(...ink); doc.setLineWidth(1.2); doc.line(M, y, R, y); y += 24;
+  room(40);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.text('Estimated total', M + 6, y);
+  doc.setTextColor(...green); doc.text(c.total == null ? 'To be quoted' : money(c.total), R - 6, y, { align: 'right' });
+  y += 20;
+  if (totalNote(c)) {
+    doc.setFontSize(9); doc.setFont('helvetica', 'normal'); doc.setTextColor(...muted);
+    doc.text(totalNote(c), M + 6, y); y += 16;
+  }
+  if (k.notes) {
+    room(50); y += 10;
+    doc.setTextColor(...ink); doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.text('Notes from the customer', M, y); y += 16;
+    doc.setFont('helvetica', 'normal');
+    doc.splitTextToSize(k.notes, R - M).forEach(line => { room(16); doc.text(line, M, y); y += 14; });
+  }
+  room(50); y += 16;
+  doc.setFontSize(9); doc.setTextColor(...muted);
+  doc.text(doc.splitTextToSize('This is an estimate based on the details entered. The Cleanup Company confirms the final price before any work starts.', R - M), M, y);
+  return doc.output('blob');
+}
+//PDF-END
+
+async function sendRequest() {
+  const btn = $('submit-btn');
+  const s = readState(), c = compute(s), k = readContact();
+  btn.disabled = true; btn.textContent = 'Sending...';
+  const id = makeId();
+  const svcLines = c.lines.map(l => l.label + ' (' + l.detail + '): ' + lineAmt(l)).concat(c.trip.count > 0 ? [tripText(c)] : []);
+  if (!svcLines.length) svcLines.push('None selected');
+  const fd = new FormData();
+  fd.append('form-name', 'quote');
+  fd.append('bot-field', '');
+  fd.append('request-id', id);
+  fd.append('customer-name', k.name);
+  fd.append('phone', k.phone);
+  fd.append('email', k.email);
+  fd.append('address', addrText(k));
+  fd.append('timing', k.timing);
+  fd.append('distance', c.trip.label || '');
+  fd.append('estimated-total', totalText(c));
+  fd.append('services', svcLines.join('\n'));
+  fd.append('notes', k.notes);
+  fd.append('full-request', buildRequest(s, c, k));
+  try { const pdf = makePdf(s, c, k, id); if (pdf) fd.append('quote-pdf', pdf, id + '.pdf'); } catch (e) { /* send without the PDF */ }
+  try {
+    const res = await fetch('/', { method: 'POST', body: fd });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const first = k.name.split(/\s+/)[0];
+    $('done-h').textContent = 'Request sent';
+    $('done-p').textContent = 'Thanks' + (first ? ', ' + first : '') + '. We got your request. Someone from The Cleanup Company will reach out soon to confirm your final price and schedule.';
+    $('req').hidden = true; $('backup').hidden = true;
+    btn.textContent = 'Sent';
+    $('done').hidden = false; $('done').scrollIntoView({ block: 'center' });
+  } catch (e) {
+    $('done-h').textContent = 'We could not send it';
+    $('done-p').textContent = 'Nothing was sent. Please tap Submit to try again, or copy your request and text it to (360) 853-6789, or call us.';
+    const text = buildRequest(s, c, k);
+    $('req').value = text; $('req').hidden = false;
+    $('sms').href = 'sms:+13608536789?&body=' + encodeURIComponent(text);
+    $('copied').textContent = '';
+    $('backup').hidden = false;
+    btn.disabled = false; btn.textContent = 'Try again';
+    $('done').hidden = false; $('done').scrollIntoView({ block: 'center' });
+  }
+}
+$('submit-btn').addEventListener('click', submitForm);
+render();
+</script>
+</body>
+</html>
