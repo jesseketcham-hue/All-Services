@@ -253,7 +253,7 @@ textarea { min-height: 5.5rem; resize: vertical; }
           </div>
         </div>
         <div class="svc" id="s-final">
-          <label class="svc-head" for="c-final"><input type="checkbox" id="c-final"><span><span class="svc-name">Final cleaning</span><span class="svc-sub">Deep clean of everything inside after a build or remodel. 40¢ per sq ft.</span></span></label>
+          <label class="svc-head" for="c-final"><input type="checkbox" id="c-final"><span><span class="svc-name">Deep Clean</span><span class="svc-sub">Deep clean of everything inside after a build or remodel. 40¢ per sq ft.</span></span></label>
           <div class="svc-body" id="b-final" hidden>
             <div class="field"><label for="fin-sf">Interior size (sq ft)</label>
               <input type="number" id="fin-sf" inputmode="numeric" min="0" step="500" placeholder="2500">
@@ -261,7 +261,7 @@ textarea { min-height: 5.5rem; resize: vertical; }
           </div>
         </div>
         <div class="svc" id="s-puff">
-          <label class="svc-head" for="c-puff"><input type="checkbox" id="c-puff"><span><span class="svc-name">Puff clean</span><span class="svc-sub">Mop hard floors, vacuum carpets, clean countertops. Lite, medium or heavy, 8¢ to 25¢ per sq ft.</span></span></label>
+          <label class="svc-head" for="c-puff"><input type="checkbox" id="c-puff"><span><span class="svc-name">Puff clean</span><span class="svc-sub">A cleaning for after a deep clean has already been done. Lite, medium or heavy, 8¢ to 25¢ per sq ft.</span></span></label>
           <div class="svc-body" id="b-puff" hidden>
             <div class="field"><label for="puff-level">Level of clean</label>
               <select id="puff-level"><option value="lite">Lite clean (8¢ per sq ft)</option><option value="medium">Medium clean (15¢ per sq ft)</option><option value="heavy">Heavy clean (25¢ per sq ft)</option></select></div>
@@ -478,7 +478,7 @@ function compute(s) {
 
   if (s.svc.final) {
     const sf = num(s.fin.sf);
-    sf > 0 ? add('final', 'Final cleaning', sf.toLocaleString('en-US') + ' sq ft', r2(sf * PRICES.finalClean.rate)) : add('final', 'Final cleaning', 'Enter the interior size', null);
+    sf > 0 ? add('final', 'Deep Clean', sf.toLocaleString('en-US') + ' sq ft', r2(sf * PRICES.finalClean.rate)) : add('final', 'Deep Clean', 'Enter the interior size', null);
   }
   if (s.svc.puff) {
     const sf = num(s.puff.sf), t = PRICES.puff[s.puff.level] || PRICES.puff.lite;
