@@ -14,14 +14,14 @@ body { margin: 0; }
 img { max-width: 100%; }
 /* Layout: one narrow column for phones opened from Instagram or Facebook. One list of services that open in place, then required and optional details and a live estimate. A fixed bar keeps the running total in view. */
 :root {
-  --bg: #F3F6EF;
+  --bg: #F6F6F0;
   --surface: #FFFFFF;
-  --ink: #1B2417;
-  --muted: #566251;
-  --line: #D8E0D1;
-  --accent: #2E7D16;
+  --ink: #1F2116;
+  --muted: #5A5C4C;
+  --line: #DEDFD0;
+  --accent: #5C641C;
   --accent-ink: #FFFFFF;
-  --accent-soft: #E5F1DE;
+  --accent-soft: #F4F5EA;
   --warn-bg: #FFF3D1;
   --warn-ink: #6A4900;
   --danger: #B3261E; --danger-soft: #FCEDEC;
@@ -30,15 +30,15 @@ img { max-width: 100%; }
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #11160F; --surface: #192015; --ink: #E8EEE3; --muted: #9BA896; --line: #2C3727;
-    --accent: #79C957; --accent-ink: #0D1A07; --accent-soft: #1E2E17;
+    --bg: #12130E; --surface: #1B1D15; --ink: #ECEDE3; --muted: #A3A593; --line: #33352A;
+    --accent: #ADB657; --accent-ink: #1A1C08; --accent-soft: #2A2D14;
     --warn-bg: #33290D; --warn-ink: #F0D58A; --danger: #FF8A80; --danger-soft: #3A1D1B;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #11160F; --surface: #192015; --ink: #E8EEE3; --muted: #9BA896; --line: #2C3727;
-  --accent: #79C957; --accent-ink: #0D1A07; --accent-soft: #1E2E17;
+  --bg: #12130E; --surface: #1B1D15; --ink: #ECEDE3; --muted: #A3A593; --line: #33352A;
+  --accent: #ADB657; --accent-ink: #1A1C08; --accent-soft: #2A2D14;
   --warn-bg: #33290D; --warn-ink: #F0D58A; --danger: #FF8A80; --danger-soft: #3A1D1B;
   color-scheme: dark;
 }
@@ -709,7 +709,7 @@ function makePdf(s, c, k, id) {
   const doc = new J({ unit: 'pt', format: 'letter' });
   const M = 48, R = 612 - M;
   let y = 60;
-  const green = [46, 125, 22], ink = [27, 36, 23], muted = [86, 98, 81];
+  const green = [92, 100, 28], ink = [31, 33, 22], muted = [90, 92, 76];
   const room = n => { if (y + n > 735) { doc.addPage(); y = 60; } };
   doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.setTextColor(...green);
   doc.text('THE CLEANUP COMPANY', M, y);
