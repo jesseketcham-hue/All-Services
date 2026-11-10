@@ -334,6 +334,7 @@ textarea { min-height: 5.5rem; resize: vertical; }
 
       <h3 class="grp">Optional info</h3>
       <div class="fields">
+        <div class="field"><label for="c-company">Company name</label><input type="text" id="c-company" autocomplete="organization"></div>
         <div class="field"><label for="c-email">Email</label><input type="email" id="c-email" autocomplete="email"></div>
         <div class="field"><label for="c-street">Job site address</label><input type="text" id="c-street" autocomplete="off">
           <p class="help">Where we'll be working, not your business address.</p></div>
@@ -381,6 +382,7 @@ textarea { min-height: 5.5rem; resize: vertical; }
   <input type="hidden" name="subject" data-remove-prefix value="New quote request">
   <input name="request-id">
   <input name="customer-name">
+  <input name="company-name">
   <input name="phone">
   <input name="email">
   <input name="job-site-address">
@@ -558,6 +560,7 @@ const addrText = k => [k.street, [k.city, k.zip].filter(Boolean).join(' ')].filt
 const totalText = c => (c.total == null ? 'to be quoted' : money(c.total)) + (totalNote(c) ? ' (' + totalNote(c).replace(/\.$/, '').toLowerCase() + ')' : '');
 function buildRequest(s, c, k) {
   const out = ['QUOTE REQUEST, The Cleanup Company', '', 'Name: ' + k.name, 'Phone: ' + k.phone, 'Preferred timing: ' + k.timing];
+  if (k.company) out.push('Company: ' + k.company);
   if (k.email) out.push('Email: ' + k.email);
   if (addrText(k)) out.push('Job site address: ' + addrText(k));
   if (c.trip.label) out.push('Distance from Nashville center: ' + c.trip.label);
@@ -592,7 +595,7 @@ function readState() {
 }
 function readContact() {
   const v = id => $(id).value.trim();
-  return { name: v('c-name'), phone: v('c-phone'), email: v('c-email'), street: v('c-street'), city: v('c-city'), zip: v('c-zip'), timing: $('c-timing').value, notes: v('c-notes') };
+  return { name: v('c-name'), company: v('c-company'), phone: v('c-phone'), email: v('c-email'), street: v('c-street'), city: v('c-city'), zip: v('c-zip'), timing: $('c-timing').value, notes: v('c-notes') };
 }
 function ensurePressureDefault() {
   if ($('c-pressure').checked && !$('c-house').checked && !$('c-conc').checked) $('c-house').checked = true;
@@ -723,6 +726,7 @@ function makePdf(s, c, k, id) {
 
   doc.setTextColor(...ink); doc.setFontSize(11);
   const info = [['Name', k.name], ['Phone', k.phone], ['Preferred timing', k.timing]];
+  if (k.company) info.push(['Company', k.company]);
   if (k.email) info.push(['Email', k.email]);
   if (addrText(k)) info.push(['Job site', addrText(k)]);
   if (c.trip.label) info.push(['Distance from Nashville center', c.trip.label]);
@@ -789,6 +793,7 @@ async function sendRequest() {
   fd.append('subject', 'Quote request: ' + k.name); // client's name in the subject so each request gets its own email thread
   fd.append('request-id', id);
   fd.append('customer-name', k.name);
+  fd.append('company-name', k.company);
   fd.append('phone', k.phone);
   fd.append('email', k.email);
   fd.append('job-site-address', addrText(k) || 'Not given');
