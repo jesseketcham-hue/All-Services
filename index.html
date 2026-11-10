@@ -325,7 +325,8 @@ textarea { min-height: 5.5rem; resize: vertical; }
       <h2 id="h3s"><span class="step">2</span>Your details</h2>
       <h3 class="grp">Required info</h3>
       <div class="fields">
-        <div class="field"><label for="c-name">Name<span class="req" aria-hidden="true">*</span></label><input type="text" id="c-name" autocomplete="name" aria-required="true"></div>
+        <div class="field"><label for="c-first">First name<span class="req" aria-hidden="true">*</span></label><input type="text" id="c-first" aria-required="true" autocomplete="given-name"></div>
+        <div class="field"><label for="c-last">Last name<span class="req" aria-hidden="true">*</span></label><input type="text" id="c-last" aria-required="true" autocomplete="family-name"></div>
         <div class="field"><label for="c-phone">Phone<span class="req" aria-hidden="true">*</span></label><input type="tel" id="c-phone" autocomplete="tel" inputmode="tel" aria-required="true"></div>
         <div class="field"><label for="c-timing">When do you want us?<span class="req" aria-hidden="true">*</span></label>
           <select id="c-timing" aria-required="true"><option value="">Choose one</option><option>As soon as possible</option><option>This week</option><option>Within two weeks</option><option>I am flexible</option></select></div>
@@ -382,6 +383,12 @@ textarea { min-height: 5.5rem; resize: vertical; }
   <input type="hidden" name="subject" data-remove-prefix value="New quote request">
   <input name="request-id">
   <input name="customer-name">
+  <input name="first-name">
+  <input name="last-name">
+  <input name="street">
+  <input name="city">
+  <input name="state">
+  <input name="zip">
   <input name="company-name">
   <input name="phone">
   <input name="email">
@@ -595,7 +602,7 @@ function readState() {
 }
 function readContact() {
   const v = id => $(id).value.trim();
-  return { name: v('c-name'), company: v('c-company'), phone: v('c-phone'), email: v('c-email'), street: v('c-street'), city: v('c-city'), zip: v('c-zip'), timing: $('c-timing').value, notes: v('c-notes') };
+  return { first: v('c-first'), last: v('c-last'), name: [v('c-first'), v('c-last')].filter(Boolean).join(' '), company: v('c-company'), phone: v('c-phone'), email: v('c-email'), street: v('c-street'), city: v('c-city'), zip: v('c-zip'), timing: $('c-timing').value, notes: v('c-notes') };
 }
 function ensurePressureDefault() {
   if ($('c-pressure').checked && !$('c-house').checked && !$('c-conc').checked) $('c-house').checked = true;
@@ -661,7 +668,8 @@ document.addEventListener('change', render);
 
 function validate() {
   const k = readContact(), errs = [], bad = [];
-  if (!k.name) { errs.push('Enter your name.'); bad.push('c-name'); }
+  if (!k.first) { errs.push('Enter your first name.'); bad.push('c-first'); }
+  if (!k.last) { errs.push('Enter your last name.'); bad.push('c-last'); }
   if (k.phone.replace(/\D/g, '').length < 10) { errs.push('Enter a phone number with area code.'); bad.push('c-phone'); }
   if (!k.timing) { errs.push('Choose when you want us.'); bad.push('c-timing'); }
   errs.bad = bad;
@@ -669,7 +677,7 @@ function validate() {
 }
 let tried = false;
 function markBad(errs) {
-  ['c-name', 'c-phone', 'c-timing'].forEach(id => {
+  ['c-first', 'c-last', 'c-phone', 'c-timing'].forEach(id => {
     const on = errs.bad.includes(id);
     $(id).closest('.field').classList.toggle('bad', on);
     on ? $(id).setAttribute('aria-invalid', 'true') : $(id).removeAttribute('aria-invalid');
@@ -793,6 +801,12 @@ async function sendRequest() {
   fd.append('subject', 'Quote request: ' + k.name); // client's name in the subject so each request gets its own email thread
   fd.append('request-id', id);
   fd.append('customer-name', k.name);
+  fd.append('first-name', k.first);
+  fd.append('last-name', k.last);
+  fd.append('street', k.street);
+  fd.append('city', k.city);
+  fd.append('state', 'TN');
+  fd.append('zip', k.zip);
   fd.append('company-name', k.company);
   fd.append('phone', k.phone);
   fd.append('email', k.email);
