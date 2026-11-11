@@ -401,6 +401,15 @@ textarea { min-height: 5.5rem; resize: vertical; }
   <textarea name="full-request"></textarea>
   <input type="file" name="quote-pdf">
 </form>
+<form name="jobber-sync-error" method="POST" data-netlify="true" hidden>
+  <input type="hidden" name="form-name" value="jobber-sync-error">
+  <input type="hidden" name="subject" data-remove-prefix value="Jobber sync failed">
+  <input name="customer-name">
+  <input name="email">
+  <input name="phone">
+  <input name="request-id">
+  <textarea name="message"></textarea>
+</form>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 <script>
